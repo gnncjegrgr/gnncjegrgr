@@ -14,11 +14,13 @@ import React, { useCallback } from 'react';
 import { logoutAction } from '../reducers/user';
 
 const UserProfile = () => {
-  const { user } = useSelector((state) => state.user);
+  const { me, logOutLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const onLogout = useCallback(() => {
-    dispatch(logoutAction);
+    dispatch({
+      type: LOG_OUT_REQUEST,
+    });
   }, []);
 
   return (
@@ -26,7 +28,7 @@ const UserProfile = () => {
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: 'grey' }} aria-label="recipe">
-            {user.nickname[0]}
+            {me.nickname[0]}
           </Avatar>
         }
         action={
@@ -34,7 +36,7 @@ const UserProfile = () => {
             로그아웃
           </Button>
         }
-        title={user.nickname}
+        title={me.nickname}
         // subheader="September 14, 2016"
       />
 
@@ -51,21 +53,21 @@ const UserProfile = () => {
             <Button>
               게시글
               <br />
-              {user.Posts.length}
+              {me.Posts.length}
             </Button>
           </Grid>
           <Grid item xs={4}>
             <Button>
               팔로잉
               <br />
-              {user.Followings.length}
+              {me.Followings.length}
             </Button>
           </Grid>
           <Grid item xs={4}>
             <Button>
               팔로워
               <br />
-              {user.Followers.length}
+              {me.Followers.length}
             </Button>
           </Grid>
         </Grid>

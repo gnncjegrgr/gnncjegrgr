@@ -4,27 +4,27 @@ import { Button, TextField, FormGroup as Form, Input, Grid, Box } from '@mui/mat
 import Link from 'next/link';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import useInput from '../hooks/useInput';
-import { loginAction } from '../reducers/user';
+import { LOG_IN_REQUEST } from '../reducers/user';
 
 const LoginForm = () => {
-  const [id, onChangeId] = useInput('');
-  const [password, onChangePassword] = useInput('');
   const dispatch = useDispatch();
+  const { logInLoading } = useSelector((state) => state.user);
+
+  const [email, onChangeEmail] = useInput('');
+  const [password, onChangePassword] = useInput('');
 
   const onSubmitForm = useCallback(
     (e) => {
       e.preventDefault();
-      dispatch(
-        loginAction({
-          id,
-          password,
-        })
-      );
+      dispatch({
+        type: LOG_IN_REQUEST,
+        data: { email, password },
+      });
     },
-    [id, password]
+    [email, password]
   );
 
   return (
@@ -32,7 +32,7 @@ const LoginForm = () => {
       <Card>
         <Box component="div" sx={{ p: 2 }}>
           <div>
-            <TextField label="ID" value={id} onChange={onChangeId} required variant="outlined" size="small" sx={{ width: '95%' }} />
+            <TextField label="ID" value={email} onChange={onChangeEmail} required variant="outlined" type="email" size="small" sx={{ width: '95%' }} />
           </div>
           <br />
           <div>

@@ -6,6 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
@@ -78,7 +79,7 @@ const settings = ['profile'];
 const AppLayout = ({ children }) => {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const { isLoggedIn } = useSelector((state) => state.user);
+  const { me } = useSelector((state) => state.user);
   const handleOpenNavMenu = useCallback((e) => {
     setAnchorElNav(e.currentTarget);
   }, []);
@@ -222,7 +223,7 @@ const AppLayout = ({ children }) => {
         <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={3}>
-              {isLoggedIn ? <UserProfile /> : <LoginForm />}
+              {me ? <UserProfile /> : <LoginForm />}
             </Grid>
             <Grid item xs={12} md={6}>
               {children}
@@ -237,6 +238,10 @@ const AppLayout = ({ children }) => {
       </ThemeProvider>
     </>
   );
+};
+
+AppLayout.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default AppLayout;

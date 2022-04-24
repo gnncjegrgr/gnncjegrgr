@@ -1,23 +1,35 @@
 // import { Button, Form, Input } from 'antd';
 import { Button, FormGroup as Form, FormControl, Input, TextField, InputLabel, InputAdornment, Avatar } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import { useDispatch, useSelector } from 'react-redux';
+
+import useInput from '../hooks/useInput';
+import { ADD_COMMENT_REQUREST } from '../reducers/post';
 
 const CommentForm = ({ post }) => {
-  const [commentText, setCommentText] = useState('');
+  const dispatch = useDispatch();
+  const { addCommentDone, addCommentLoading } = useSelector((state) => state.post);
+  const { me } = useSelector((state) => state.user);
+  const id = useSelector((state) => state.user.me?.id);
+  const [commentText, onChangeCommentText, setCommentText] = useInput('');
+
+  useEffect(() => {
+    if (addCommentDone) {
+      setCommentText('');
+    }
+  }, [addCommentDone]);
 
   const onSubmitComment = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(commentText);
+      dispatch({
+        type: ADD_COMMENT_REQUEST,
+        data: { content: commentText, userId: id, postId: post.id },
+      });
     },
-    [commentText]
+    [commentText, id]
   );
-
-  const onChangeCommentText = useCallback((e) => {
-    setCommentText(e.target.value);
-  }, []);
 
   return (
     <>
@@ -30,7 +42,7 @@ const CommentForm = ({ post }) => {
               id="input-with-icon-adornment"
               startAdornment={
                 <InputAdornment position="start">
-                  <Avatar sx={{ width: 35, height: 35, fontSize: 15, bgcolor: 'grey' }}>M</Avatar>
+                  <Avatar sx={{ width: 35, height: 35, fontSize: 15, bgcolor: 'grey' }}>{me?.nickname[0]}</Avatar>
                 </InputAdornment>
               }
               onChange={onChangeCommentText}

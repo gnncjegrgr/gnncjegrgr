@@ -17,7 +17,7 @@ import {
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
 } from '../reducers/post';
-import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducerse/user';
+import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 function loadPostsAPI(data) {
   return axios.get('/api/posts', data);
@@ -25,6 +25,7 @@ function loadPostsAPI(data) {
 
 function* loadPosts(action) {
   try {
+    // const result = yield call(loadPostsAPI, action.data);
     yield delay(1000);
     yield put({
       type: LOAD_POSTS_SUCCESS,

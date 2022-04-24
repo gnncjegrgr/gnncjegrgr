@@ -23,7 +23,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import Link from 'next/link';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import CommentForm from './CommentForm';
@@ -31,7 +31,8 @@ import PostCardContent from './PostCardContent';
 import PostImages from './PostImages';
 import FollowButton from './FollowButton';
 import LoopIcon from '@mui/icons-material/Loop';
-import Item from 'antd/lib/list/Item';
+
+import { REMOVE_POST_REQUEST } from '../reducers/post';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -45,6 +46,9 @@ const ExpandMore = styled((props) => {
 }));
 
 const PostCard = ({ post }) => {
+  const dispatch = useDispatch();
+  const { removePostLoading } = useSelector((state) => state.post);
+
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const id = useSelector((state) => state.user.me && state.user.me.id);
@@ -65,6 +69,13 @@ const PostCard = ({ post }) => {
 
   const open = Boolean(anchorEl);
 
+  const onRemovePost = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
+  }, []);
+
   return (
     <Card sx={{ width: '100%', marginBottom: '5%', paddingBottom: '2%' }}>
       <CardHeader
@@ -81,7 +92,7 @@ const PostCard = ({ post }) => {
                   <>
                     <Button>수정</Button>
                     <br />
-                    <Button>삭제</Button>
+                    <Button onClick={onRemovePost}>삭제</Button>
                   </>
                 ) : (
                   <Button color="error">신고</Button>

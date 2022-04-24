@@ -1,5 +1,5 @@
 import shortId from 'shortid';
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 
 import produce from '../util/produce';
 
@@ -92,7 +92,7 @@ const dummyComment = (data) => ({
     nickname: '제로초',
   },
 });
-
+// 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수(불변성은 지키면서)
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
@@ -108,8 +108,9 @@ const reducer = (state = initialState, action) =>
         draft.hasMorePosts = draft.mainPosts.length < 50;
         break;
       case LOAD_POSTS_FAILURE:
-        draft.loadingPostsLoading = false;
-        draft.ladPostsError = action.error;
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
+        break;
       case ADD_POST_REQUEST:
         draft.addPostLoading = true;
         draft.addPostDone = false;
@@ -138,12 +139,28 @@ const reducer = (state = initialState, action) =>
         draft.removePostLoading = false;
         draft.removePostError = action.error;
         break;
+      case ADD_COMMENT_REQUEST:
+        draft.addCommentLoading = true;
+        draft.addCommentDone = false;
+        draft.addCommentError = null;
+        break;
       case ADD_COMMENT_SUCCESS: {
         const post = draft.mainPosts.find((v) => v.id === action.data.postId);
         post.Comments.unshift(dummyComment(action.data.content));
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;
+        // const postIndex = state.mainPosts.findIndex((v) => v.id === action.data.postId);
+        // const post = { ...state.mainPosts[postIndex] };
+        // post.Comments = [dummyComment(action.data.content), ...post.Comments];
+        // const mainPosts = [...state.mainPosts];
+        // mainPosts[postIndex] = post;
+        // return {
+        //   ...state,
+        //   mainPosts,
+        //   addCommentLoading: false,
+        //   addCommentDone: true,
+        // };
       }
       case ADD_COMMENT_FAILURE:
         draft.addCommentLoading = false;

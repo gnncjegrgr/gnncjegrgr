@@ -1,6 +1,10 @@
 import { FormGroup as Form, InputBase, Button, Grid } from '@mui/material';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
+
+import useInput from '../hooks/useInput';
+import { CHANGE_NICKNAME_REQUEST } from '../reducers/user';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   display: 'flex',
@@ -19,6 +23,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const NicknameEditForm = () => {
+  const { me } = useSelector((state) => state.user);
+  const [nickname, onChangeNickname] = useInput(me?.nickname || '');
+  const dispatch = useDispatch();
+
+  const onSubmit = useCallback(() => {
+    dispatch({
+      type: CHANGE_NICKNAME_REQUEST,
+      data: nickname,
+    });
+  }, [nickname]);
+
   return (
     <Form style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px', border: '1px solid #d9d9d9', padding: '20px', paddingRight: '50px' }}>
       <Grid container spacing={2}>
@@ -26,7 +41,7 @@ const NicknameEditForm = () => {
           <StyledInputBase sx={{ ml: 1, flex: 1 }} placeholder="닉네임 변경하기" inputProps={{ 'aria-label': 'search google maps' }} />
         </Grid>
         <Grid item xs={1}>
-          <Button>수정</Button>
+          <Button onClick={onSubmit}>수정</Button>
         </Grid>
       </Grid>
     </Form>

@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 // import { Form, Input, Checkbox, Button } from 'antd';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Paper, Box, TextField, Checkbox, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import { SIGN_UP_REQUEST } from '../reducers/user';
 import AppLayout from '../components/AppLayout';
 import useInput from '../hooks/useInput';
 
@@ -21,9 +22,19 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [termError, setTermError] = useState(false);
 
-  const [id, onChangeId] = useInput('');
+  const [email, onChangeEmail] = useInput('');
   const [nick, onChangeNick] = useInput('');
   const [password, onChangePassword] = useInput('');
+
+  const dispatch = useDispatch();
+  const { isSigninUp, me } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (me) {
+      alert('로그인했으니 메인페이지로 이동합니다.');
+      Router.push('/');
+    }
+  }, [me && me.id]);
 
   const onSubmit = useCallback(() => {
     if (password !== passwordCheck) {
@@ -32,7 +43,15 @@ const Signup = () => {
     if (!term) {
       return setTermError(true);
     }
-  }, [password, passwordCheck, term]);
+    return dispatch({
+      type: SIGN_UP_REQUEST,
+      data: {
+        email,
+        password,
+        nick,
+      },
+    });
+  }, [email, password, passwordCheck, term]);
 
   const onChangePasswordCheck = useCallback(
     (e) => {
@@ -54,14 +73,14 @@ const Signup = () => {
           <Item>
             <h3 htmlFor="sign-up">회원가입</h3>
             <div>
-              <TextField id="ID" label="아이디" variant="standard" sx={{ width: '100%' }} value={id} onChange={onChangeId} />
+              <TextField email="ID" label="아이디" variant="standard" sx={{ width: '100%' }} value={email} onChange={onChangeEmail} />
             </div>
             <div>
-              <TextField id="nickname" label="닉네임" variant="standard" sx={{ width: '100%' }} value={nick} onChange={onChangeNick} />
+              <TextField email="nickname" label="닉네임" variant="standard" sx={{ width: '100%' }} value={nick} onChange={onChangeNick} />
             </div>
             <div>
               <TextField
-                id="password"
+                email="password"
                 label="비밀번호"
                 variant="standard"
                 sx={{ width: '100%' }}
@@ -72,7 +91,7 @@ const Signup = () => {
             </div>
             <div>
               <TextField
-                id="password-check"
+                email="password-check"
                 label="비밀번호 체크"
                 variant="standard"
                 sx={{ width: '100%' }}

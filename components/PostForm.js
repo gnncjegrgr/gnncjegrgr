@@ -1,12 +1,11 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react';
-// import { Form, Input, Button } from 'antd';
 import { TextField, Button } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { addPost } from '../reducers/post';
+import { ADD_POST_REQUEST } from '../reducers/post';
 
 const PostForm = () => {
-  const { imagePaths, postAdded } = useSelector((state) => state.post);
+  const { imagePaths, addPostLoading, addPostDone } = useSelector((state) => state.post);
   const [text, setText] = useState('');
   const dispatch = useDispatch();
   const imageInput = useRef();
@@ -16,19 +15,25 @@ const PostForm = () => {
   }, [imageInput.current]);
 
   useEffect(() => {
-    if (postAdded) {
+    if (addPostDone) {
       setText('');
     }
-  }, [postAdded]);
+  }, [addPostDone]);
 
   const onChangeText = useCallback((e) => {
     setText(e.target.value);
   }, []);
 
-  const onSubmit = useCallback((e) => {
-    e.preventDefault();
-    dispatch(addPost);
-  }, []);
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      dispatch({
+        type: ADD_POST_REQUEST,
+        data: text,
+      });
+    },
+    [text]
+  );
 
   return (
     <form style={{ margin: '10px 0 20px' }} encType="multipart/form-data">
