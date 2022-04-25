@@ -21,7 +21,7 @@ import {
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-
+import LoopIcon from '@mui/icons-material/Loop';
 import Link from 'next/link';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -30,9 +30,8 @@ import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
 import PostImages from './PostImages';
 import FollowButton from './FollowButton';
-import LoopIcon from '@mui/icons-material/Loop';
 
-import { REMOVE_POST_REQUEST } from '../reducers/post';
+import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST, RETWEET_REQUEST } from '../reducers/post';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -48,12 +47,11 @@ const ExpandMore = styled((props) => {
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
   const { removePostLoading } = useSelector((state) => state.post);
+  const { me } = useSelector((state) => state.user);
 
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const id = useSelector((state) => state.user.me && state.user.me.id);
-
-  const [liked, setLiked] = React.useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -69,20 +67,50 @@ const PostCard = ({ post }) => {
 
   const open = Boolean(anchorEl);
 
-  const onRemovePost = useCallback(() => {
-    dispatch({
-      type: REMOVE_POST_REQUEST,
+  const onRetweet = useCallback(() => {
+    if (!id) {
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: RETWEET_REQUEST,
       data: post.id,
     });
-  }, []);
+  }, [id]);
+
+  const liked = post.Likers?.find((v) => v.id === id);
+
+  const onLike = useCallback(() => {
+    if (!id) {
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: LIKE_POST_REQUEST,
+      data: post.id,
+    });
+  }, [id]);
+  const onUnlike = useCallback(() => {
+    if (!id) {
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: UNLIKE_POST_REQUEST,
+      data: post.id,
+    });
+  }, [id]);
 
   return (
     <Card sx={{ width: '100%', marginBottom: '5%', paddingBottom: '2%' }}>
       <CardHeader
-        avatar={<Avatar sx={{ bgcolor: '#000' }}>{post.User.nickname[0]}</Avatar>}
+        avatar={
+          <Link href={{ pathname: '/user', query: { id: post.User.id } }} as={`/user${post.User.id}`}>
+            <a>
+              <Avatar sx={{ bgcolor: '#000' }}>{post.User.nickname[0]}</Avatar>
+            </a>
+          </Link>
+        }
         action={
           <>
-            <FollowButton post={post} />
+            {me && <FollowButton post={post} />}
             <IconButton aria-label="settings">
               <IconButton onClick={handleClick}>
                 <MoreVertIcon />
@@ -102,7 +130,7 @@ const PostCard = ({ post }) => {
           </>
         }
         title={post.User.nickname}
-        // subheader={post.createdAt}
+        subheader={post.RetweetId ? `${post.User.nickname}님이 리트윗하셨습니다.` : null}
       />
       <CardMedia>{post.Images[0] && <PostImages images={post.Images} />}</CardMedia>
       <CardContent>
@@ -111,20 +139,33 @@ const PostCard = ({ post }) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton aria-label="add to favorites" onClick={onRetweet}>
           <LoopIcon />
         </IconButton>
-        <IconButton aria-label="like" onClick={() => setLiked(!liked)}>
-          {liked ? <FavoriteIcon style={{ color: 'red' }} /> : <FavoriteIcon />}
-        </IconButton>
+
+        {liked ? (
+          <IconButton aria-label="like" onClick={onLike}>
+            <FavoriteIcon style={{ color: 'red' }} />
+          </IconButton>
+        ) : (
+          <IconButton aria-label="like" onClick={onUnlike}>
+            <FavoriteIcon />
+          </IconButton>
+        )}
+
         <ExpandMore expand={expanded} onClick={handleExpandClick} aria-expanded={expanded} aria-label="show more">
           <ExpandMoreIcon />
         </ExpandMore>
+        <span style={{ fontSize: 13, marginRight: '5%' }}>{`${post.Comments.length}개의 댓글`}</span>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <CommentForm post={post} />
-          <br />
+          {me && (
+            <>
+              <CommentForm post={post} /> <br />
+            </>
+          )}
+
           {post.Comments?.map((el, idx) => (
             <List sx={{ width: '100%', bgcolor: 'background.paper' }} key={idx}>
               <ListItem alignItems="flex-start">

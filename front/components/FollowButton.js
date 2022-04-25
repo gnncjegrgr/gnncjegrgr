@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { FOLLOW_REQUEST, UNFOLLOW_REQUEST } from '../reducers/user';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 const FollowButton = ({ post }) => {
   const dispatch = useDispatch();
@@ -22,7 +23,21 @@ const FollowButton = ({ post }) => {
     }
   }, [isFollowing]);
 
-  return <Button onClick={onClickButton}>{isFollowing ? '언팔로우' : '팔로우'}</Button>;
+  if (post.User.id === me.id) {
+    return null;
+  }
+
+  return (
+    <>
+      {followLoading || unfollowLoading ? (
+        <LoadingButton loading variant="outlined">
+          Submit
+        </LoadingButton>
+      ) : (
+        <Button onClick={onClickButton}>{isFollowing ? '언팔로우' : '팔로우'}</Button>
+      )}
+    </>
+  );
 };
 
 FollowButton.propTypes = {

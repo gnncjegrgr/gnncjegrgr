@@ -1,8 +1,11 @@
-import { Button, Card, Paper, List, ListItem, ListItemIcon, ListItemText, ListSubheader, Grid } from '@mui/material';
+import { Button, IconButton, Card, Paper, List, ListItem, ListItemIcon, ListItemText, ListSubheader, Grid } from '@mui/material';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+
+import { UNFOLLOW_REQUEST, REMOVE_FOLLOWER_REQUEST } from '../reducers/user';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -20,6 +23,20 @@ const ItemMore = styled('div')(({ theme }) => ({
 }));
 
 const FollowList = ({ header, data }) => {
+  const dispatch = useDispatch();
+  const onCancel = (id) => () => {
+    if (header === '팔로잉') {
+      dispatch({
+        type: UNFOLLOW_REQUEST,
+        data: id,
+      });
+    }
+    dispatch({
+      type: REMOVE_FOLLOWER_REQUEST,
+      data: id,
+    });
+  };
+
   return (
     <>
       <List
@@ -34,9 +51,9 @@ const FollowList = ({ header, data }) => {
                   <span style={{ fontSize: '15px' }}>{v.nickname}</span>
                   <br />
                   <br />
-                  <Button>
+                  <IconButton onClick={onCancel}>
                     <DoDisturbIcon />
-                  </Button>
+                  </IconButton>
                 </Item>
               </Grid>
             ))}

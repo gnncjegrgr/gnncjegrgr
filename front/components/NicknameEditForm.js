@@ -38,7 +38,12 @@ const NicknameEditForm = () => {
     <Form style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px', border: '1px solid #d9d9d9', padding: '20px', paddingRight: '50px' }}>
       <Grid container spacing={2}>
         <Grid item xs={11}>
-          <StyledInputBase sx={{ ml: 1, flex: 1 }} placeholder="닉네임 변경하기" inputProps={{ 'aria-label': 'search google maps' }} />
+          <StyledInputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="닉네임 변경하기"
+            inputProps={{ 'aria-label': 'search google maps' }}
+            onChange={onChangeNickname}
+          />
         </Grid>
         <Grid item xs={1}>
           <Button onClick={onSubmit}>수정</Button>

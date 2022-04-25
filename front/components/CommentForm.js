@@ -1,11 +1,12 @@
 // import { Button, Form, Input } from 'antd';
 import { Button, FormGroup as Form, FormControl, Input, TextField, InputLabel, InputAdornment, Avatar } from '@mui/material';
 import React, { useCallback, useState, useEffect } from 'react';
+import LoadingButton from '@mui/lab/LoadingButton';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useInput from '../hooks/useInput';
-import { ADD_COMMENT_REQUREST } from '../reducers/post';
+import { ADD_COMMENT_REQUEST } from '../reducers/post';
 
 const CommentForm = ({ post }) => {
   const dispatch = useDispatch();
@@ -47,9 +48,15 @@ const CommentForm = ({ post }) => {
               }
               onChange={onChangeCommentText}
             />
-            <Button sx={{ position: 'absolute', right: 0, bottom: -40, zIndex: 2 }} onClick={onSubmitComment}>
-              댓글
-            </Button>
+            {addCommentLoading ? (
+              <LoadingButton sx={{ position: 'absolute', right: 0, bottom: -40, zIndex: 2 }} loading variant="outlined">
+                댓글
+              </LoadingButton>
+            ) : (
+              <Button sx={{ position: 'absolute', right: 0, bottom: -40, zIndex: 2 }} onClick={onSubmitComment}>
+                댓글
+              </Button>
+            )}
           </FormControl>
         </Form>
       </form>

@@ -6,8 +6,10 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import { useSelector, useDispatch } from 'react-redux';
+import { LOG_OUT_REQUEST } from '../reducers/user';
 
 import React, { useCallback } from 'react';
 
@@ -32,9 +34,15 @@ const UserProfile = () => {
           </Avatar>
         }
         action={
-          <Button sx={{ marginTop: '6px' }} onClick={onLogout}>
-            로그아웃
-          </Button>
+          logOutLoading ? (
+            <LoadingButton loading variant="outlined">
+              로그아웃
+            </LoadingButton>
+          ) : (
+            <Button sx={{ marginTop: '6px' }} onClick={onLogout}>
+              로그아웃
+            </Button>
+          )
         }
         title={me.nickname}
         // subheader="September 14, 2016"

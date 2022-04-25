@@ -1,20 +1,27 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 // import { Button, Form, Input } from 'antd';
 import { Button, TextField, FormGroup as Form, Input, Grid, Box } from '@mui/material';
 import Link from 'next/link';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { LoadingButton } from '@mui/lab';
 
 import useInput from '../hooks/useInput';
 import { LOG_IN_REQUEST } from '../reducers/user';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { logInLoading } = useSelector((state) => state.user);
+  const { logInLoading, logInError } = useSelector((state) => state.user);
 
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
+
+  useEffect(() => {
+    if (logInError) {
+      alert(logInError);
+    }
+  }, [logInError]);
 
   const onSubmitForm = useCallback(
     (e) => {
@@ -41,9 +48,15 @@ const LoginForm = () => {
         </Box>
         <div style={{ marginTop: '10px', marginLeft: '3%' }}>
           <CardActions>
-            <Button type="primary" onClick={onSubmitForm}>
-              로그인
-            </Button>
+            {logInLoading ? (
+              <LoadingButton loading variant="outlined">
+                로그인
+              </LoadingButton>
+            ) : (
+              <Button type="primary" onClick={onSubmitForm}>
+                로그인
+              </Button>
+            )}
             <Link href="/signup">
               <a>
                 <Button>회원가입</Button>
