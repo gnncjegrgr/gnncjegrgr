@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 // import { Form, Input, Checkbox, Button } from 'antd';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { Paper, Box, TextField, Checkbox, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import Router from 'next/router';
 
 import { SIGN_UP_REQUEST } from '../reducers/user';
 import AppLayout from '../components/AppLayout';
@@ -27,31 +28,48 @@ const Signup = () => {
   const [password, onChangePassword] = useInput('');
 
   const dispatch = useDispatch();
-  const { isSigninUp, me } = useSelector((state) => state.user);
+  const { signUpLoading, signUpDone, signUpError, me } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (me) {
-      alert('로그인했으니 메인페이지로 이동합니다.');
-      Router.push('/');
+    if (me && me.id) {
+      Router.replace('/');
     }
   }, [me && me.id]);
 
-  const onSubmit = useCallback(() => {
-    if (password !== passwordCheck) {
-      return setPasswordError(true);
+  useEffect(() => {
+    if (signUpDone) {
+      Router.replace('/');
     }
-    if (!term) {
-      return setTermError(true);
+  }, [signUpDone]);
+
+  useEffect(() => {
+    if (signUpError) {
+      alert(signUpError);
     }
-    return dispatch({
-      type: SIGN_UP_REQUEST,
-      data: {
-        email,
-        password,
-        nick,
-      },
-    });
-  }, [email, password, passwordCheck, term]);
+  }, [signUpError]);
+
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      console.log(nick, email, password);
+
+      if (password !== passwordCheck) {
+        return setPasswordError(true);
+      }
+      if (!term) {
+        return setTermError(true);
+      }
+      return dispatch({
+        type: SIGN_UP_REQUEST,
+        data: {
+          email,
+          password,
+          nickname: nick,
+        },
+      });
+    },
+    [email, password, passwordCheck, term]
+  );
 
   const onChangePasswordCheck = useCallback(
     (e) => {
@@ -73,7 +91,7 @@ const Signup = () => {
           <Item>
             <h3 htmlFor="sign-up">회원가입</h3>
             <div>
-              <TextField email="ID" label="아이디" variant="standard" sx={{ width: '100%' }} value={email} onChange={onChangeEmail} />
+              <TextField email="ID" label="이메일" type="email" variant="standard" sx={{ width: '100%' }} value={email} onChange={onChangeEmail} />
             </div>
             <div>
               <TextField email="nickname" label="닉네임" variant="standard" sx={{ width: '100%' }} value={nick} onChange={onChangeNick} />

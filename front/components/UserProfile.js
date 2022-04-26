@@ -13,8 +13,6 @@ import { LOG_OUT_REQUEST } from '../reducers/user';
 
 import React, { useCallback } from 'react';
 
-import { logoutAction } from '../reducers/user';
-
 const UserProfile = () => {
   const { me, logOutLoading } = useSelector((state) => state.user);
   const dispatch = useDispatch();

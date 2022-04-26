@@ -98,6 +98,16 @@ const PostCard = ({ post }) => {
     });
   }, [id]);
 
+  const onRemovePost = useCallback(() => {
+    if (!id) {
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
+  }, [id]);
+
   return (
     <Card sx={{ width: '100%', marginBottom: '5%', paddingBottom: '2%' }}>
       <CardHeader
